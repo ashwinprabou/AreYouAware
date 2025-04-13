@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Globe, Clock } from 'lucide-react';
+import '../components-css/LocalResources.css';
 
 interface Resource {
   name: string;
@@ -40,7 +41,7 @@ function LocalResources({ topic, location, onComplete }: LocalResourcesProps) {
   ]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-5 resources">
       <div className="text-center">
         <h2 className="text-xl font-bold text-foreground">Local Legal Resources</h2>
         <p className="mt-2 text-sm text-muted">
@@ -48,11 +49,11 @@ function LocalResources({ topic, location, onComplete }: LocalResourcesProps) {
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 card-container">
         {resources.map((resource, index) => (
           <div
             key={index}
-            className="card"
+            className="card card-width"
           >
             <h3 className="text-lg font-semibold text-foreground">
               {resource.name}
@@ -62,10 +63,13 @@ function LocalResources({ topic, location, onComplete }: LocalResourcesProps) {
             <div className="mt-3 space-y-2">
               <div className="flex items-center text-sm text-foreground">
                 <MapPin className="h-4 w-4 mr-2 text-muted" />
-                <span className="flex-1">{resource.address}</span>
-                <span className="ml-2 text-xs text-primary">
-                  ({resource.distance})
+                <span className="flex-1">
+                  {resource.address}   
+                  <span className="ml-2 text-xs text-primary">
+                    ({resource.distance})
+                  </span>
                 </span>
+
               </div>
               
               <div className="flex items-center text-sm text-foreground">
@@ -99,7 +103,7 @@ function LocalResources({ topic, location, onComplete }: LocalResourcesProps) {
       <div className="sticky bottom-4">
         <button
           onClick={onComplete}
-          className="btn-primary w-full"
+          className="btn-primary cont-btn"
         >
           Continue to Action Steps
         </button>

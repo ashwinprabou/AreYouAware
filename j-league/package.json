@@ -9,6 +9,7 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
+    "@heroui/react": "^2.7.6",
     "@react-router/node": "^7.5.0",
     "@react-router/serve": "^7.5.0",
     "@types/jspdf": "^2.0.0",

@@ -1,0 +1,24 @@
+.resources {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+
+.card-container {
+    display: flex;
+    position: relative;
+    left: 15%;
+    width: 100%;
+    gap: 10px;
+}
+
+.card-width {
+    width: 20%;
+    height: 300px;
+}
+
+.cont-btn {
+    width: 350px;
+}

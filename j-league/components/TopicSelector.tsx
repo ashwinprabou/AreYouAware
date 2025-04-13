@@ -65,6 +65,7 @@ function TopicSelector({
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Function to handle voice recording (existing logic)
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -127,10 +128,54 @@ function TopicSelector({
     }
   };
 
+  // Function to handle search bar form submission
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       onSelect("custom-query", searchQuery);
+    }
+  };
+
+  // NEW FUNCTION: handleTopicQuery
+  // This function sends both topic.id and topic.description to the backend.
+  const handleTopicQuery = async (topic: {
+    id: string;
+    description: string;
+  }) => {
+    try {
+      setIsLoading(true);
+      // Create a payload that includes the topic details.
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: "",
+          topicId: topic.id,
+          description: topic.description,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to query topic");
+      }
+
+      const data = await response.json();
+
+      const newAiMessage: ChatMessage = {
+        type: "ai",
+        content: data.response,
+        timestamp: new Date().toISOString(),
+      };
+
+      setChatHistory((prev) => [...prev, newAiMessage]);
+
+      // Use the topic id and the answer returned from the API.
+      onSelect(topic.id, data.response);
+    } catch (error) {
+      console.error("Error querying topic:", error);
+      // Handle the error in your UI
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -195,7 +240,8 @@ function TopicSelector({
           return (
             <button
               key={topic.id}
-              onClick={() => onSelect(topic.id)}
+              // Use the new handleTopicQuery function to query the backend with the topic id and description.
+              onClick={() => handleTopicQuery(topic)}
               className="w-full flex items-center p-4 card hover:shadow-md transition-shadow"
               disabled={isLoading}
             >

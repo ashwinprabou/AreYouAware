@@ -8,6 +8,7 @@ from record import record_to_wav
 from transcribe import transcribe_audio
 from gemini_prompt import prompt_gemini
 import os
+from typing import Optional
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -27,6 +28,8 @@ app.add_middleware(
 class ChatRequest(BaseModel):
     message: str
     conversation_history: str = ""
+    topicId: Optional[str] = None
+    description: Optional[str] = None
 
 class ChatResponse(BaseModel):
     response: str
@@ -75,20 +78,31 @@ async def chat(request: ChatRequest):
     try:
         logger.info(f"Received chat request: {request.message}")
         logger.info(f"Conversation history: {request.conversation_history}")
-        
-        # Create prompt with conversation history
-        context_prompt = create_context_prompt(request.message, request.conversation_history)
+
+        # If topic fields are provided, combine them with the message.
+        if request.topicId and request.description:
+            # You can format the topic as you see fit. Here we concatenate them.
+            topic_info = f"Topic: {request.topicId} - {request.description}"
+            # If the message is empty, use the topic_info as the main message;
+            # if there's already a message, append it or combine as needed.
+            full_input = f"{topic_info}\nUser Query: {request.message}" if request.message.strip() else topic_info
+        else:
+            full_input = request.message
+
+        # Create your context prompt using the full_input (which now may contain topic data)
+        context_prompt = create_context_prompt(full_input, request.conversation_history)
         logger.info(f"Created context prompt: {context_prompt}")
-        
+
         # Get Gemini's response
         logger.info("Calling Gemini API...")
         response = prompt_gemini(context_prompt)
         logger.info(f"Received Gemini response: {response}")
-        
+
         return ChatResponse(response=response)
     except Exception as e:
         logger.error(f"Error in chat endpoint: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/transcribe")
 async def transcribe_voice(request: Request):

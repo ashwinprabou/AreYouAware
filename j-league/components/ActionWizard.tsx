@@ -265,10 +265,44 @@ function ActionWizard({
           </div>
         );
 
+        case "rights":
+          return (
+            <div className="space-y-3">
+              {[
+                "Right to Medical Care: Get checked by a doctor, even if you feel okay. Hidden injuries can surface later. Keep records of all medical visits and treatments.",
+                "Right to Fair Compensation: If the accident wasn't your fault, you have the right to be compensated for your medical bills, car repairs, lost wages, and pain and suffering.",
+                "Right to Legal Representation: You can hire a lawyer to help you navigate the legal process and protect your rights.",
+              ].map((item, index) => (
+                <div key={index} className="message-bubble flex items-center">
+                  <CheckCircle className="h-4 w-4 text-primary mr-2" />
+                  <span className="text-sm text-foreground">{item}</span>
+                </div>
+              ))}
+            </div>
+          );
+
+        case "action":
+          return (
+            <div className="space-y-3">
+              {[
+                "Contact your insurance provider immediately and file a claim with all necessary details.",
+                "Schedule follow-up medical appointments and continue treatment as needed.",
+                "Collect and organize all documentation, including notes and evidence added here.",
+                "Consult a legal advisor to explore your options if you haven't already.",
+              ].map((item, index) => (
+                <div key={index} className="message-bubble flex items-center">
+                  <CheckCircle className="h-4 w-4 text-primary mr-2" />
+                  <span className="text-sm text-foreground">{item}</span>
+                </div>
+              ))}
+            </div>
+          );
       default:
         return (
           <div className="space-y-3">
-            {["Item 1", "Item 2", "Item 3"].map((item, index) => (
+            {["Item Right to Medical Care: Get checked by a doctor, even if you feel okay. Hidden injuries can surface later. Keep records of all medical visits and treatments.", 
+            "Right to Fair Compensation: If the accident wasn't your fault, you have the right to be compensated for your medical bills, car repairs, lost wages, and pain and suffering. This is usually handled through insurance claims or a lawsuit.", 
+            "Right to Legal Representation: You can hire a lawyer to help you navigate the legal process and protect your rights. A lawyer can help you understand your options and get you the compensation you deserve."].map((item, index) => (
               <div key={index} className="message-bubble flex items-center">
                 <CheckCircle className="h-4 w-4 text-primary mr-2" />
                 <span className="text-sm text-foreground">{item}</span>
@@ -278,6 +312,8 @@ function ActionWizard({
         );
     }
   };
+
+
 
   return (
     <div className="outter-action">
@@ -342,6 +378,8 @@ function ActionWizard({
             {renderStepContent()}
           </div>
         </div>
+
+
 
         {/* Navigation Buttons */}
         <div className="flex justify-between gap-4">

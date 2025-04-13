@@ -21,22 +21,31 @@ interface LocalResourcesProps {
 function LocalResources({ topic, location, onComplete }: LocalResourcesProps) {
   const [resources] = useState<Resource[]>([
     {
-      name: 'Legal Aid Society',
+      name: 'Legal Document Services',
       type: 'Legal Clinic',
-      address: '123 Main St, City, State',
-      phone: '(555) 123-4567',
-      website: 'www.legalaid.org',
+      address: '104 Walnut Ave. Suite 204, Santa Cruz, CA 95060',
+      phone: ' (831) 469-8470',
+      website: 'https://www.legaldocumentservices.net/',
       hours: 'Mon-Fri: 9AM-5PM',
       distance: '2.3 miles'
     },
     {
-      name: 'Community Law Center',
+      name: 'Lawyer Referral Service of Santa Cruz',
       type: 'Non-Profit Organization',
-      address: '456 Oak Ave, City, State',
-      phone: '(555) 987-6543',
-      website: 'www.communitylawcenter.org',
+      address: '456 Oak Ave, Santa Cruz, CA 95061',
+      phone: '(831) 425-4755',
+      website: 'https://lawyerreferralsantacruz.org/',
       hours: 'Mon-Thu: 10AM-6PM',
       distance: '3.1 miles'
+    },
+    {
+      name: 'Wade Litigation',
+      type: 'Non-Profit Organization',
+      address: '456 Oak Ave, Santa Cruz, CA 95061',
+      phone: '1-866-963-1695',
+      website: 'https://wadelitigation.com/family-law/',
+      hours: 'Mon-Thu: 10AM-6PM',
+      distance: '5.2 miles'
     }
   ]);
 

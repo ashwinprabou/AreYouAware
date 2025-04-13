@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Shield,
@@ -9,7 +8,7 @@ import {
   Mic,
   StopCircle,
 } from "lucide-react";
-import '../components-css/TopicSelector.css';
+import "../components-css/TopicSelector.css";
 
 interface ChatMessage {
   type: "user" | "ai";
@@ -118,16 +117,8 @@ function TopicSelector({
 
       <div className="center">
         <div className="input-area">
-          <form
-            onSubmit={handleSearch}
-            className="items-center gap-2 form"
-          >
-
-            
-
+          <form onSubmit={handleSearch} className="items-center gap-2 form">
             <div className="inner-form">
-
-
               {/* <div className="flex justify-center">
                 <button
                   onClick={isRecording ? stopRecording : startRecording}
@@ -154,15 +145,16 @@ function TopicSelector({
                 placeholder="Enter the context.."
                 className="input"
               />
-
             </div>
 
             <button type="submit" className="btn-primary w-[300px]">
-                Get Started!
-              </button>
-            
+              Get Started!
+            </button>
           </form>
         </div>
+        <p className="text-sm pt-3 text-foreground">
+          DISCLAIMER: RightsNow does not serve as a lawyer.
+        </p>
       </div>
 
       {/* Mobile Topics List */}
@@ -172,7 +164,6 @@ function TopicSelector({
           {topics.map((topic) => {
             const IconComponent = topic.icon;
             return (
-              
               <button
                 key={topic.id}
                 onClick={() => onSelect(topic.id)}
@@ -180,7 +171,6 @@ function TopicSelector({
               >
                 <div className="">
                   <IconComponent className="h-6 w-6 text-primary" />
-
                 </div>
                 <div className="ml-4 flex-1 text-left">
                   <h3 className="text-base font-semibold text-foreground">

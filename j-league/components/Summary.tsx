@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import '../components-css/Summary.css';
+import "../components-css/Summary.css";
 
 interface ChatMessage {
   type: "user" | "ai";
@@ -133,9 +133,9 @@ function Summary({
     doc.text("Key Rights", 20, currentY + 200);
     doc.setFontSize(10);
     const rights = [
-      "Right to fair housing and protection against discrimination",
-      "Right to a habitable living space",
-      "Right to privacy and proper notice before landlord entry",
+      "Right to Medical Care: Get checked by a doctor, even if you feel okay. Hidden injuries can surface later. Keep records of all medical visits and treatments",
+      "Right to Fair Compensation: If the accident wasn't your fault, you have the right to be compensated for your medical bills, car repairs, lost wages, and pain and suffering. This is usually handled through insurance claims or a lawsuit.",
+      "Right to Legal Representation: You can hire a lawyer to help you navigate the legal process and protect your rights. A lawyer can help you understand your options and get you the compensation you deserve.",
     ];
     rights.forEach((right, index) => {
       doc.text(`• ${right}`, 20, currentY + 210 + index * 10);
@@ -153,7 +153,9 @@ function Summary({
     <div className="outter-sum-page">
       <div className="space-y-6 sum-page">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-foreground center">Your Case Summary</h2>
+          <h2 className="text-xl font-bold text-foreground center">
+            Your Case Summary
+          </h2>
           <p className="mt-2 text-sm text-muted">
             Overview of your case and next steps
           </p>
@@ -177,7 +179,9 @@ function Summary({
 
           {/* Evidence and Documents */}
           <section>
-            <h3 className="section-title text-white center">Evidence Collection</h3>
+            <h3 className="section-title text-white center">
+              Evidence Collection
+            </h3>
             <div className="space-y-2">
               {caseDetails.evidence.map((item) => (
                 <div key={item.id} className="message-bubble">
@@ -210,17 +214,27 @@ function Summary({
               <li className="flex items-start">
                 <span className="flex-shrink-0 w-1.5 h-1.5 mt-2 bg-primary rounded-full mr-2"></span>
                 <span>
-                  Right to fair housing and protection against discrimination
+                  Right to Medical Care: Get checked by a doctor, even if you
+                  feel okay. Hidden injuries can surface later. Keep records of
+                  all medical visits and treatments.
                 </span>
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 w-1.5 h-1.5 mt-2 bg-primary rounded-full mr-2"></span>
-                <span>Right to a habitable living space</span>
+                <span>
+                  Right to Fair Compensation: If the accident wasn't your fault,
+                  you have the right to be compensated for your medical bills,
+                  car repairs, lost wages, and pain and suffering. This is
+                  usually handled through insurance claims or a lawsuit.
+                </span>
               </li>
               <li className="flex items-start">
                 <span className="flex-shrink-0 w-1.5 h-1.5 mt-2 bg-primary rounded-full mr-2"></span>
                 <span>
-                  Right to privacy and proper notice before landlord entry
+                  Right to Legal Representation: You can hire a lawyer to help
+                  you navigate the legal process and protect your rights. A
+                  lawyer can help you understand your options and get you the
+                  compensation you deserve.
                 </span>
               </li>
             </ul>
@@ -228,7 +242,9 @@ function Summary({
 
           {/* Chat History */}
           <section>
-            <h3 className="section-title text-white center">Consultation History</h3>
+            <h3 className="section-title text-white center">
+              Consultation History
+            </h3>
             <div className="space-y-2">
               {chatHistory.map((msg, index) => (
                 <div
@@ -264,13 +280,12 @@ function Summary({
               <Bell className="h-4 w-4 mr-2 text-white" />
               <p className="text-white">Set Case Reminders</p>
             </button>
-
           </div>
-          
+
           <button onClick={onGoHome} className="btn-neutral width">
-              <Home className="h-4 w-4 mr-2 text-white" />
-              <p className="text-white">Return to Home</p>
-            </button>
+            <Home className="h-4 w-4 mr-2 text-white" />
+            <p className="text-white">Return to Home</p>
+          </button>
         </div>
       </div>
     </div>

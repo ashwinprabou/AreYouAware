@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import { Send, Mic, Bot } from "lucide-react";
 
 interface ChatMessage {
@@ -29,20 +30,35 @@ function ChatInterface({
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasSentInitial, setHasSentInitial] = useState(false);
 
-  // Handle initial query when component mounts
   useEffect(() => {
-    if (initialQuery && chatHistory.length === 0) {
-      console.log("Processing initial query:", initialQuery);
+    if (initialQuery && chatHistory.length === 0 && !hasSentInitial) {
+      // Add the user’s initial message
       const newMessage: ChatMessage = {
         type: "user",
         content: initialQuery,
         timestamp: new Date().toISOString(),
       };
+
+      // Set `hasSentInitial` to true immediately to prevent duplicate calls
+      setHasSentInitial(true);
+
+      // Update the chat history
       setChatHistory([newMessage]);
-      handleSend(initialQuery);
     }
-  }, [initialQuery]);
+  }, [initialQuery, chatHistory.length, hasSentInitial]);
+
+  useEffect(() => {
+    // Trigger handleSend only after the initial message is added to the chat history
+    if (
+      hasSentInitial &&
+      chatHistory.length === 1 &&
+      chatHistory[0].type === "user"
+    ) {
+      handleSend(chatHistory[0].content);
+    }
+  }, [hasSentInitial, chatHistory]);
 
   const handleSend = async (textToSend?: string) => {
     const messageToSend = textToSend || message;
@@ -64,7 +80,10 @@ function ChatInterface({
     try {
       // Format conversation history for the API
       const conversationHistory = chatHistory
-        .map(msg => `${msg.type === "user" ? "Student" : "Assistant"}: ${msg.content}`)
+        .map(
+          (msg) =>
+            `${msg.type === "user" ? "Student" : "Assistant"}: ${msg.content}`
+        )
         .join("\n");
 
       console.log("Sending request to backend:", {
@@ -76,29 +95,34 @@ function ChatInterface({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify({
           message: messageToSend,
           conversation_history: conversationHistory,
         }),
-      }).catch(error => {
+      }).catch((error) => {
         console.error("Network error:", error);
         throw new Error(`Network error: ${error.message}`);
       });
 
       console.log("Response status:", response.status);
-      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+      console.log(
+        "Response headers:",
+        Object.fromEntries(response.headers.entries())
+      );
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: "Unknown error" }));
+        const errorData = await response
+          .json()
+          .catch(() => ({ detail: "Unknown error" }));
         console.error("Error response:", errorData);
         throw new Error(errorData.detail || "Failed to get response from AI");
       }
 
       const data = await response.json();
       console.log("Received response from backend:", data);
-      
+
       if (!data.response) {
         throw new Error("No response received from AI");
       }
@@ -108,14 +132,15 @@ function ChatInterface({
         content: data.response,
         timestamp: new Date().toISOString(),
       };
-      
+
       setChatHistory((currentHistory) => [...currentHistory, aiResponse]);
     } catch (error) {
       console.error("Error in handleSend:", error);
       setError(error instanceof Error ? error.message : "An error occurred");
       const errorMessage: ChatMessage = {
         type: "ai",
-        content: "Sorry, there was an error processing your request. Please try again.",
+        content:
+          "Sorry, there was an error processing your request. Please try again.",
         timestamp: new Date().toISOString(),
       };
       setChatHistory((currentHistory) => [...currentHistory, errorMessage]);
@@ -124,38 +149,66 @@ function ChatInterface({
     }
   };
 
-  const handleVoiceRecord = async (blob: Blob) => {
-    try {
-      setIsLoading(true);
-      
-      // Send audio blob to backend for transcription
-      const formData = new FormData();
-      formData.append("audio_data", blob);
+  const handleVoiceRecord = async () => {
+    if (!isRecording) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        const mediaRecorder = new MediaRecorder(stream);
+        const audioChunks: Blob[] = [];
 
-      const response = await fetch(`${API_BASE_URL}/api/transcribe`, {
-        method: "POST",
-        body: formData,
-      });
+        mediaRecorder.ondataavailable = (event) => {
+          audioChunks.push(event.data);
+        };
 
-      if (!response.ok) {
-        throw new Error("Failed to transcribe audio");
+        mediaRecorder.onstop = async () => {
+          const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+
+          // Convert to ArrayBuffer for proper WAV format
+          const arrayBuffer = await audioBlob.arrayBuffer();
+          const wavData = new Uint8Array(arrayBuffer);
+
+          try {
+            const response = await fetch(`${API_BASE_URL}/api/transcribe`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "audio/wav",
+              },
+              body: wavData,
+            });
+
+            if (!response.ok) {
+              throw new Error("Transcription failed");
+            }
+
+            const data = await response.json();
+            setMessage(data.transcription);
+          } catch (error) {
+            console.error("Error transcribing audio:", error);
+            setError("Failed to transcribe audio. Please try again.");
+          }
+
+          stream.getTracks().forEach((track) => track.stop());
+        };
+
+        mediaRecorder.start();
+        setIsRecording(true);
+
+        // Stop recording after 30 seconds
+        setTimeout(() => {
+          if (isRecording) {
+            mediaRecorder.stop();
+            setIsRecording(false);
+          }
+        }, 30000);
+      } catch (error) {
+        console.error("Error accessing microphone:", error);
+        setError("Failed to access microphone. Please check your permissions.");
+        setIsRecording(false);
       }
-
-      const data = await response.json();
-      
-      // Use the transcribed text as a message
-      setMessage(data.transcription);
-      handleSend();
-    } catch (error) {
-      console.error("Error:", error);
-      const errorMessage: ChatMessage = {
-        type: "ai",
-        content: "Sorry, there was an error transcribing your voice message. Please try again.",
-        timestamp: new Date().toISOString(),
-      };
-      setChatHistory((currentHistory) => [...currentHistory, errorMessage]);
-    } finally {
-      setIsLoading(false);
+    } else {
+      setIsRecording(false);
     }
   };
 
@@ -171,9 +224,7 @@ function ChatInterface({
 
       {/* Error Message */}
       {error && (
-        <div className="p-2 bg-red-100 text-red-600 text-sm">
-          {error}
-        </div>
+        <div className="p-2 bg-red-100 text-red-600 text-sm">{error}</div>
       )}
 
       {/* Chat Messages */}
@@ -195,10 +246,23 @@ function ChatInterface({
               {msg.type === "ai" && (
                 <div className="flex items-center mb-1">
                   <Bot className="h-4 w-4 mr-1" />
-                  <span className="text-sm font-semibold">AI Assistant</span>
+                  <span className="text-sm text-primary">AI Assistant</span>
                 </div>
               )}
-              <p className="text-sm">{msg.content}</p>
+              {/* Render AI response with Markdown */}
+              {msg.type === "ai" ? (
+                <ReactMarkdown
+                  components={{
+                    p: ({ node, ...props }) => (
+                      <p className="text-sm" {...props} />
+                    ),
+                  }}
+                >
+                  {msg.content}
+                </ReactMarkdown>
+              ) : (
+                <p className="text-sm">{msg.content}</p>
+              )}
               <span className="text-xs opacity-75 mt-1 block">
                 {new Date(msg.timestamp).toLocaleTimeString()}
               </span>
@@ -209,10 +273,10 @@ function ChatInterface({
           <div className="flex justify-start">
             <div className="max-w-[80%] rounded-lg p-3 bg-gray-200">
               <div className="flex items-center mb-1">
-                <Bot className="h-4 w-4 mr-1" />
-                <span className="text-sm font-semibold">AI Assistant</span>
+                <Bot className="h-4 w-4 mr-1 text-primary" />
+                <span className="text-sm text-primary">AI Assistant</span>
               </div>
-              <p className="text-sm">Thinking...</p>
+              <p className="text-sm text-primary">Thinking...</p>
             </div>
           </div>
         )}

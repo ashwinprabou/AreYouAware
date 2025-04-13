@@ -40,6 +40,7 @@ function App() {
   const stepOrder = Object.keys(steps);
 
   const handleTopicSelect = (topic: string, query?: string) => {
+    setChatHistory([]);
     setSelectedTopic(topic);
     setInitialQuery(query || "");
     setCurrentStep("chat");

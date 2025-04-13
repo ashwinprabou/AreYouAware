@@ -7,6 +7,7 @@ import json
 from record import record_to_wav
 from transcribe import transcribe_audio
 from gemini_prompt import prompt_gemini
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -45,9 +46,9 @@ async def log_requests(request: Request, call_next):
 def create_context_prompt(user_input: str, conversation_history: str = "", is_follow_up: bool = False) -> str:
     today = date.today().strftime("%B %d, %Y")
     context_prompt = f"""
-    You are a professional legal assistant helping college students understand their rights.
+    You are a professional legal assistant helping those inexperienced with the law and legal issues understand their rights.
     Explain everything calmly, clearly, and in simple terms.
-    The student does not know much about the law.
+    The person does not know much about the law.
     It is currently {today}.
 
     {conversation_history}
@@ -55,9 +56,13 @@ def create_context_prompt(user_input: str, conversation_history: str = "", is_fo
     Here is what the student said:
     \"\"\"{user_input}\"\"\"
 
-    Now respond with what they can and cannot do based on what you understood.
-    If you need more information to provide a complete answer, ask ONE clear follow-up question.
-    If you don't need more information, provide your complete answer without asking any questions.
+    In your explanation:
+    - Talk about the law, legal issues, and legal rights that the person has in simple terms.
+    - Then, talk about what the person should do in this situation.
+    - Then, talk about what the person shouldn't do in this situation.
+    - Use bullet points (`-`) for lists and add spacing between sections for readability.
+    - Limit your answer to 200 words.
+    Ask any follow up questions that may help the person or you out.
     """
     return context_prompt
 
@@ -86,13 +91,27 @@ async def chat(request: ChatRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/transcribe")
-async def transcribe_voice(audio_data: bytes):
+async def transcribe_voice(request: Request):
     try:
         logger.info("Received audio data for transcription")
         
-        # Save the audio data to a file
+        # Get raw bytes from request body
+        audio_data = await request.body()
+        logger.info(f"Received {len(audio_data)} bytes of audio data")
+        
+        # Save the audio data to a file with proper WAV header
         with open("temp_audio.wav", "wb") as f:
             f.write(audio_data)
+        
+        # Verify the file exists and has content
+        if not os.path.exists("temp_audio.wav"):
+            raise HTTPException(status_code=500, detail="Failed to save audio file")
+        
+        file_size = os.path.getsize("temp_audio.wav")
+        if file_size == 0:
+            raise HTTPException(status_code=500, detail="Audio file is empty")
+        
+        logger.info(f"Saved audio file with size: {file_size} bytes")
         
         # Transcribe the audio
         transcription = transcribe_audio("temp_audio.wav")

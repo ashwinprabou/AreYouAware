@@ -59,7 +59,9 @@ function TopicSelector({
   setChatHistory,
 }: TopicSelectorProps) {
   const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -94,7 +96,7 @@ function TopicSelector({
   const handleVoiceRecord = async (blob: Blob) => {
     try {
       setIsLoading(true);
-      
+
       // Send audio blob to backend for transcription
       const formData = new FormData();
       formData.append("audio_data", blob);
@@ -109,22 +111,14 @@ function TopicSelector({
       }
 
       const data = await response.json();
-      
-      // Add the transcribed message to chat history
-      const newMessage: ChatMessage = {
-        type: "user",
-        content: data.transcription,
-        timestamp: new Date().toISOString(),
-        isVoice: true,
-      };
-      
-      setChatHistory((currentHistory) => [...currentHistory, newMessage]);
+
       onSelect("custom-query", data.transcription);
     } catch (error) {
       console.error("Error:", error);
       const errorMessage: ChatMessage = {
         type: "ai",
-        content: "Sorry, there was an error transcribing your voice message. Please try again.",
+        content:
+          "Sorry, there was an error transcribing your voice message. Please try again.",
         timestamp: new Date().toISOString(),
       };
       setChatHistory((currentHistory) => [...currentHistory, errorMessage]);
@@ -136,12 +130,6 @@ function TopicSelector({
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      const newMessage: ChatMessage = {
-        type: "user",
-        content: searchQuery,
-        timestamp: new Date().toISOString(),
-      };
-      setChatHistory([...chatHistory, newMessage]);
       onSelect("custom-query", searchQuery);
     }
   };
@@ -190,7 +178,11 @@ function TopicSelector({
           className="input-field w-[200px]"
           disabled={isLoading}
         />
-        <button type="submit" className="btn-primary w-[80px]" disabled={isLoading}>
+        <button
+          type="submit"
+          className="btn-primary w-[80px]"
+          disabled={isLoading}
+        >
           Ask
         </button>
       </form>

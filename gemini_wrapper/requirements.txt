@@ -1,0 +1,7 @@
+openai-whisper
+sounddevice
+scipy
+pydub
+python-dotenv
+google-generativeai
+torch

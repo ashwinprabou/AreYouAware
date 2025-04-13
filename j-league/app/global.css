@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: #191970;
+    --primary-hover: #505bda;
+    --secondary: #5c9b57;
+    --secondary-hover: #15803d;
+    --accent: #9333ea;
+    --accent-hover: #7e22ce;
+    --neutral: #4b5563;
+    --neutral-hover: #374151;
+    --background: #ffffff;
+    --foreground: #191970;
+    --muted: #f3f4f6;
+    --muted-foreground: #6b7280;
+    --border: #191970;
+    --exit: #8b0000;
+    --exit-hover: #c80000;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply w-full flex items-center justify-center px-4 py-2 rounded-full text-sm transition-colors duration-200;
+    background-color: var(--primary);
+    color: white;
+  }
+  .btn-primary:hover {
+    background-color: var(--primary-hover);
+  }
+
+  .btn-secondary {
+    @apply w-full flex items-center justify-center px-4 py-2 rounded-full text-sm transition-colors duration-200;
+    background-color: var(--secondary);
+    color: white;
+  }
+  .btn-secondary:hover {
+    background-color: var(--secondary-hover);
+  }
+
+  .btn-accent {
+    @apply w-full flex items-center justify-center px-4 py-2 rounded-full text-sm transition-colors duration-200;
+    background-color: var(--accent);
+    color: white;
+  }
+  .btn-accent:hover {
+    background-color: var(--accent-hover);
+  }
+
+  .btn-neutral {
+    @apply w-full flex items-center justify-center px-4 py-2 rounded-full text-sm transition-colors duration-200;
+    background-color: var(--neutral);
+    color: white;
+  }
+  .btn-neutral:hover {
+    background-color: var(--neutral-hover);
+  }
+
+  .btn-exit {
+    @apply w-full flex items-center justify-center px-4 py-2 rounded-full text-sm transition-colors duration-200;
+    background-color: var(--exit);
+    color: rgb(255, 255, 255);
+  }
+  .btn-exit:hover {
+    background-color: var(--exit-hover);
+  }
+
+  .card {
+    @apply rounded-xl shadow-sm p-4 space-y-6;
+    background-color: var(--background);
+    border: 1px solid var(--border);
+  }
+
+  .section-title {
+    @apply text-lg font-semibold mb-3;
+    color: var(--foreground);
+  }
+
+  .input-field {
+    @apply flex-1 px-3 py-2 rounded-full text-sm focus:ring-2 focus:border-transparent;
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    color: var(--foreground);
+  }
+  .input-field:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary);
+  }
+
+  .nav-icon {
+    @apply p-2 rounded-full transition-colors duration-200;
+    color: var(--foreground);
+  }
+  .nav-icon:hover {
+    background-color: var(--muted);
+  }
+
+  .message-bubble {
+    @apply p-3 rounded-lg;
+    background-color: var(--muted);
+    color: var(--foreground);
+  }
+
+  .message-bubble-user {
+    @apply p-3 rounded-lg;
+    background-color: var(--primary);
+    color: white;
+  }
+
+  .message-bubble-ai {
+    @apply p-3 rounded-lg;
+    background-color: var(--muted);
+    color: var(--foreground);
+  }
+
+  .progress-step {
+    @apply flex items-center;
+  }
+
+  .progress-step-active {
+    @apply font-semibold;
+    color: var(--primary);
+  }
+
+  .progress-step-completed {
+    color: var(--secondary);
+  }
+
+  .progress-step-pending {
+    color: var(--muted-foreground);
+  }
+
+  .text-primary {
+    color: var(--primary);
+  }
+
+  .text-secondary {
+    color: var(--secondary);
+  }
+
+  .text-accent {
+    color: var(--accent);
+  }
+
+  .text-foreground {
+    color: var(--foreground);
+  }
+
+  .text-muted {
+    color: var(--muted-foreground);
+  }
+
+  .text-exit {
+    color: var(--exit);
+  }
+
+  .bg-primary {
+    background-color: var(--primary);
+  }
+
+  .bg-secondary {
+    background-color: var(--secondary);
+  }
+
+  .bg-accent {
+    background-color: var(--accent);
+  }
+
+  .bg-muted {
+    background-color: var(--muted);
+  }
+
+  .border {
+    border: var(--border);
+  }
+}

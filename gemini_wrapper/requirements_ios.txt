@@ -1,0 +1,9 @@
+openai-whisper
+sounddevice
+scipy
+pydub
+python-dotenv
+google-generativeai
+torch
+/Applications/Python\ 3.12/Install\ Certificates.command
+brew install ffmpeg

@@ -8,7 +8,6 @@ import {
   Camera,
   Paperclip,
 } from "lucide-react";
-import '../components-css/ActionWizard.css';
 
 interface CaseDetails {
   notes: Array<{ id: string; content: string; date: string }>;
@@ -214,7 +213,7 @@ function ActionWizard({
                 rows={3}
               />
               <div className="flex items-center space-x-2">
-                <label className="btn-secondary cursor-pointer paperclip">
+                <label className="btn-secondary cursor-pointer">
                   <input
                     type="file"
                     onChange={handleFileChange}
@@ -280,93 +279,89 @@ function ActionWizard({
   };
 
   return (
-    <div className="outter-action">
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-xl font-bold text-foreground">Action Steps</h2>
+        <p className="mt-2 text-sm text-muted">
+          Follow these steps to document your case
+        </p>
+      </div>
 
-    
-      <div className="space-y-6 action-page mt-5">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-foreground">Action Steps</h2>
-          <p className="mt-2 text-sm text-muted">
-            Follow these steps to document your case
-          </p>
-        </div>
-
-        {/* Progress Steps */}
-        <div className="flex justify-between items-center">
-          {steps.map((step, index) => (
-            <React.Fragment key={step.title}>
-              <div className="flex flex-col items-center">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    index <= currentStep
-                      ? "bg-primary text-white"
-                      : "bg-muted text-primary"
-                  }`}
-                >
-                  {index < currentStep ? (
-                    <CheckCircle className="h-4 w-4" />
-                  ) : (
-                    index + 1
-                  )}
-                </div>
-                <span
-                  className={`text-xs mt-1 ${
-                    index <= currentStep ? "text-foreground" : "text-muted"
-                  }`}
-                >
-                  {step.title}
-                </span>
+      {/* Progress Steps */}
+      <div className="flex justify-between items-center">
+        {steps.map((step, index) => (
+          <React.Fragment key={step.title}>
+            <div className="flex flex-col items-center">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  index <= currentStep
+                    ? "bg-primary text-white"
+                    : "bg-muted text-primary"
+                }`}
+              >
+                {index < currentStep ? (
+                  <CheckCircle className="h-4 w-4" />
+                ) : (
+                  index + 1
+                )}
               </div>
-              {index < steps.length - 1 && (
-                <div
-                  className={`flex-1 h-0.5  ${
-                    index < currentStep ? "bg-primary" : "bg-muted"
-                  }`}
-                />
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-
-        {/* Step Content */}
-        <div className="card card-hover">
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold text-foreground">
-                {steps[currentStep].title}
-              </h3>
-              <p className="text-sm text-muted">
-                {steps[currentStep].description}
-              </p>
+              <span
+                className={`text-xs mt-1 ${
+                  index <= currentStep ? "text-foreground" : "text-muted"
+                }`}
+              >
+                {step.title}
+              </span>
             </div>
-            {renderStepContent()}
-          </div>
-        </div>
+            {index < steps.length - 1 && (
+              <div
+                className={`flex-1 h-0.5  ${
+                  index < currentStep ? "bg-primary" : "bg-muted"
+                }`}
+              />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between gap-4">
-          <button
-            onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
-            className={`btn-neutral flex items-center ${
-              currentStep === 0 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={currentStep === 0}
-          >
-            <ChevronLeft className="h-4 w-4 mr-2 prev" />
-            <p className="prev">Previous</p>
-          </button>
-          <button
-            onClick={() =>
-              currentStep === steps.length - 1
-                ? onComplete()
-                : setCurrentStep((prev) => Math.min(steps.length - 1, prev + 1))
-            }
-            className="btn-primary flex items-center"
-          >
-            {currentStep === steps.length - 1 ? "Complete" : "Next"}
-            <ChevronRight className="h-4 w-4 ml-2" />
-          </button>
+      {/* Step Content */}
+      <div className="card">
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">
+              {steps[currentStep].title}
+            </h3>
+            <p className="text-sm text-muted">
+              {steps[currentStep].description}
+            </p>
+          </div>
+          {renderStepContent()}
         </div>
+      </div>
+
+      {/* Navigation Buttons */}
+      <div className="flex justify-between gap-4">
+        <button
+          onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
+          className={`btn-neutral flex items-center ${
+            currentStep === 0 ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={currentStep === 0}
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Previous
+        </button>
+        <button
+          onClick={() =>
+            currentStep === steps.length - 1
+              ? onComplete()
+              : setCurrentStep((prev) => Math.min(steps.length - 1, prev + 1))
+          }
+          className="btn-primary flex items-center"
+        >
+          {currentStep === steps.length - 1 ? "Complete" : "Next"}
+          <ChevronRight className="h-4 w-4 ml-2" />
+        </button>
       </div>
     </div>
   );

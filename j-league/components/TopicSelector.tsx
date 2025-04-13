@@ -8,7 +8,6 @@ import {
   Mic,
   StopCircle,
 } from "lucide-react";
-import '../components-css/TopicSelector.css';
 
 interface ChatMessage {
   type: "user" | "ai";
@@ -18,11 +17,12 @@ interface ChatMessage {
 }
 
 interface TopicSelectorProps {
-  onSelect: (topic: string) => void;
-  onVoiceRecord: (blob: Blob) => void;
+  onSelect: (topic: string, initialQuery?: string) => void;
   chatHistory: ChatMessage[];
   setChatHistory: (history: ChatMessage[]) => void;
 }
+
+const API_BASE_URL = "http://localhost:8000";
 
 const topics = [
   {
@@ -55,7 +55,6 @@ const topics = [
 
 function TopicSelector({
   onSelect,
-  onVoiceRecord,
   chatHistory,
   setChatHistory,
 }: TopicSelectorProps) {
@@ -64,6 +63,7 @@ function TopicSelector({
     null
   );
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Function to handle voice recording (existing logic)
   const startRecording = async () => {
@@ -73,9 +73,9 @@ function TopicSelector({
       const chunks: BlobPart[] = [];
 
       recorder.ondataavailable = (e) => chunks.push(e.data);
-      recorder.onstop = () => {
+      recorder.onstop = async () => {
         const blob = new Blob(chunks, { type: "audio/webm" });
-        onVoiceRecord(blob);
+        await handleVoiceRecord(blob);
         stream.getTracks().forEach((track) => track.stop());
       };
 
@@ -167,7 +167,6 @@ function TopicSelector({
         timestamp: new Date().toISOString(),
       };
 
-
       setChatHistory((prev) => [...prev, newAiMessage]);
 
       // Use the topic id and the answer returned from the API.
@@ -181,7 +180,7 @@ function TopicSelector({
   };
 
   return (
-    <div className="space-y-6 p-60">
+    <div className="space-y-6">
       <div className="text-center">
         <h1 className="text-2xl font-bold text-foreground">
           What would you like to inquire about?
@@ -189,37 +188,27 @@ function TopicSelector({
         <p className="mt-2 text-muted">Speak, type, or choose a topic</p>
       </div>
 
-      <div className="center">
-        <div className="input-area">
-          <form
-            onSubmit={handleSearch}
-            className="items-center gap-2 form"
-          >
-
-            
-
-            <div className="inner-form">
-
-
-              <div className="flex justify-center">
-                <button
-                  onClick={isRecording ? stopRecording : startRecording}
-                  className={`mic ${
-                    isRecording
-                      ? "bg-destructive/10 mic animate-pulse "
-                      : "bg-primary/10 text-primary"
-                  }`}
-                  aria-label={isRecording ? "Stop recording" : "Start recording"}
-                >
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center border-2 border-current">
-                    {isRecording ? (
-                      <StopCircle className="h-8 w-8" />
-                    ) : (
-                      <Mic className="h-8 w-8" />
-                    )}
-                  </div>
-                </button>
-              </div>
+      {/* Voice Recording Button */}
+      <div className="flex justify-center">
+        <button
+          onClick={isRecording ? stopRecording : startRecording}
+          className={`p-6 rounded-full ${
+            isRecording
+              ? "bg-destructive/10 text-exit animate-pulse"
+              : "bg-primary/10 text-primary"
+          }`}
+          aria-label={isRecording ? "Stop recording" : "Start recording"}
+          disabled={isLoading}
+        >
+          <div className="w-16 h-16 rounded-full flex items-center justify-center border-2 border-current">
+            {isRecording ? (
+              <StopCircle className="h-8 w-8" />
+            ) : (
+              <Mic className="h-8 w-8" />
+            )}
+          </div>
+        </button>
+      </div>
 
       {/* Mobile Search Bar */}
       <form
@@ -244,7 +233,7 @@ function TopicSelector({
       </form>
 
       {/* Mobile Topics List */}
-      <div className="space-y-3 pt-55">
+      <div className="space-y-3">
         <h2 className="text-lg font-semibold text-foreground">Common Topics</h2>
         {topics.map((topic) => {
           const IconComponent = topic.icon;

@@ -1,7 +1,0 @@
-.bottom-border {
-    -webkit-box-shadow: 0px 54px 125px -50px rgba(0,0,0,0.75);
-    -moz-box-shadow: 0px 54px 125px -50px rgba(0,0,0,0.75);
-    box-shadow: 0px 54px 125px -50px rgba(0,0,0,0.75);
-    background: #171611;
-    background: linear-gradient(90deg, rgba(23, 22, 17, 1) 0%, rgba(87, 199, 133, 0) 20%, rgba(56, 113, 77, 0) 80%, rgba(23, 22, 17, 1) 100%);
-}

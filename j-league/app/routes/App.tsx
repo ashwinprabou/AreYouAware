@@ -22,6 +22,7 @@ function App() {
   const [userLocation, setUserLocation] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [initialQuery, setInitialQuery] = useState<string>("");
   const [caseDetails, setCaseDetails] = useState({
     notes: [],
     documents: [],
@@ -41,6 +42,7 @@ function App() {
   const handleTopicSelect = (topic: string, query?: string) => {
     setChatHistory([]);
     setSelectedTopic(topic);
+    setInitialQuery(query || "");
     setCurrentStep("chat");
   };
 
@@ -91,12 +93,12 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-muted to-background">
       {/* Mobile Navigation */}
-      <nav className="bg-background shadow-sm fixed top-0 left-0 right-0 z-50 bottom-border">
-        <div className="px-4 py-3">
+      <nav className="bg-background shadow-sm fixed top-0 left-0 right-0 z-50">
+        <div className="px-4 py-3 bg-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               {currentStep !== "topics" && (
-                <button onClick={handleBack} className="nav-icon text-white mr-2">
+                <button onClick={handleBack} className="nav-icon">
                   <ArrowLeft className="h-5 w-5" />
                 </button>
               )}
@@ -105,7 +107,9 @@ function App() {
                 KnowYourRights
               </span>
             </div>
-
+            <div className="flex items-center">
+              <MapPin className="h-5 w-5 text-muted" />
+            </div>
           </div>
         </div>
       </nav>
@@ -170,7 +174,6 @@ function App() {
             >
               <TopicSelector
                 onSelect={handleTopicSelect}
-                onVoiceRecord={handleVoiceRecord}
                 chatHistory={chatHistory}
                 setChatHistory={setChatHistory}
               />
@@ -186,6 +189,7 @@ function App() {
             >
               <ChatInterface
                 topic={selectedTopic}
+                initialQuery={initialQuery}
                 onComplete={() => setCurrentStep("resources")}
                 chatHistory={chatHistory}
                 setChatHistory={setChatHistory}

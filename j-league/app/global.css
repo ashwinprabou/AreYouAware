@@ -4,148 +4,116 @@
 
 @layer base {
   :root {
-    /** Base colors */
-    --clr-dark-a0: #000000;
-    --clr-light-a0: #ffffff;
-
-    /** Theme primary colors */
-    --clr-primary-a0: #ffbb00;
-    --clr-primary-a10: #ffc238;
-    --clr-primary-a20: #ffca56;
-    --clr-primary-a30: #ffd170;
-    --clr-primary-a40: #ffd988;
-    --clr-primary-a50: #ffe0a0;
-
-    /** Theme surface colors */
-    --clr-surface-a0: #171611;
-    --clr-surface-a10: #2c2b27;
-    --clr-surface-a20: #43423e;
-    --clr-surface-a30: #5b5a56;
-    --clr-surface-a40: #747370;
-    --clr-surface-a50: #8e8d8b;
-
-    /** Theme tonal surface colors */
-    --clr-surface-tonal-a0: #2b2415;
-    --clr-surface-tonal-a10: #40382a;
-    --clr-surface-tonal-a20: #554e41;
-    --clr-surface-tonal-a30: #6b6559;
-    --clr-surface-tonal-a40: #827d73;
-    --clr-surface-tonal-a50: #9a958d;
-
-    /** Examples */
-    .bg-primary {
-    color: var(--clr-primary-a50);
-    background-color: var(--clr-surface-a0);
-}
-
-   
+    --primary: #191970;
+    --primary-hover: #505bda;
+    --secondary: #5c9b57;
+    --secondary-hover: #15803d;
+    --accent: #9333ea;
+    --accent-hover: #7e22ce;
+    --neutral: #4b5563;
+    --neutral-hover: #374151;
+    --background: #ffffff;
+    --foreground: #191970;
+    --muted: #f3f4f6;
+    --muted-foreground: #6b7280;
+    --border: #191970;
+    --exit: #8b0000;
+    --exit-hover: #c80000;
   }
 }
 
 @layer components {
-  body {
-    background-color: var(--clr-surface-a0);
-    color: var(--clr-light-a0);
-  }
-
-  .bg-primary {
-    color: var(--clr-primary-a10);
-    background-color: var(--clr-surface-a0);
-  }
-
   .btn-primary {
     @apply w-full flex items-center justify-center px-4 py-2 rounded-full text-sm transition-colors duration-200;
-    background-color: var(--clr-primary-a0);
-    color: var(--clr-dark-a0);
-    cursor: pointer;
+    background-color: var(--primary);
+    color: white;
   }
   .btn-primary:hover {
-    background-color: var(--clr-primary-a50);
+    background-color: var(--primary-hover);
   }
 
   .btn-secondary {
     @apply w-full flex items-center justify-center px-4 py-2 rounded-full text-sm transition-colors duration-200;
-    background-color: var(--clr-primary-a10);
-    color: var(--clr-dark-a0);
+    background-color: var(--secondary);
+    color: white;
   }
   .btn-secondary:hover {
-    background-color: var(--clr-primary-a50);
+    background-color: var(--secondary-hover);
   }
 
   .btn-accent {
     @apply w-full flex items-center justify-center px-4 py-2 rounded-full text-sm transition-colors duration-200;
-    background-color: var(--clr-surface-tonal-a10);
-    color: var(--clr-dark-a0);
+    background-color: var(--accent);
+    color: white;
   }
   .btn-accent:hover {
-    background-color: var(--clr-surface-tonal-a20);
+    background-color: var(--accent-hover);
   }
 
   .btn-neutral {
     @apply w-full flex items-center justify-center px-4 py-2 rounded-full text-sm transition-colors duration-200;
-    background-color: var(--clr-surface-a20);
-    color: var(--clr-dark-a0);
+    background-color: var(--neutral);
+    color: white;
   }
   .btn-neutral:hover {
-    background-color: var(--clr-surface-a30);
+    background-color: var(--neutral-hover);
   }
 
   .btn-exit {
     @apply w-full flex items-center justify-center px-4 py-2 rounded-full text-sm transition-colors duration-200;
-    background-color: #8b0000;
-    color: var(--clr-dark-a0);
+    background-color: var(--exit);
+    color: rgb(255, 255, 255);
   }
   .btn-exit:hover {
-    background-color: #c80000;
+    background-color: var(--exit-hover);
   }
 
   .card {
     @apply rounded-xl shadow-sm p-4 space-y-6;
-    background-color: var(--clr-surface-a10);
-    border: 1px solid var(--clr-surface-a30);
+    background-color: var(--background);
+    border: 1px solid var(--border);
   }
 
   .section-title {
     @apply text-lg font-semibold mb-3;
-    color: var(--clr-dark-a0);
+    color: var(--foreground);
   }
 
   .input-field {
     @apply flex-1 px-3 py-2 rounded-full text-sm focus:ring-2 focus:border-transparent;
-    background-color: var(--clr-surface-a20);
-    border: var(--clr-surface-a30);
-    color: var(--clr-light-a0);
-    font-size: 15px;
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    color: var(--foreground);
   }
   .input-field:focus {
-    border: var(--clr-primary-a0);
-    box-shadow: 0 0 0 2px var(--clr-primary-a0);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary);
   }
 
   .nav-icon {
     @apply p-2 rounded-full transition-colors duration-200;
-    color: var(--clr-dark-a0);
+    color: var(--foreground);
   }
   .nav-icon:hover {
-    background-color: var(--clr-surface-a20);
+    background-color: var(--muted);
   }
 
   .message-bubble {
     @apply p-3 rounded-lg;
-    background-color: var(--clr-surface-a30);
-    color: var(--clr-dark-a0);
+    background-color: var(--muted);
+    color: var(--foreground);
   }
 
   .message-bubble-user {
     @apply p-3 rounded-lg;
-    background-color: #ffbb006b;
-    color: var(--clr-dark-a0);
+    background-color: var(--primary);
+    color: white;
   }
 
   .message-bubble-ai {
     @apply p-3 rounded-lg;
-    background-color: rgba(34, 33, 27, 0);
-    color: var(--clr-dark-a0);
+    background-color: var(--muted);
+    color: var(--foreground);
   }
 
   .progress-step {
@@ -154,58 +122,58 @@
 
   .progress-step-active {
     @apply font-semibold;
-    color: var(--clr-primary-a0);
+    color: var(--primary);
   }
 
   .progress-step-completed {
-    color: var(--clr-primary-a40);
+    color: var(--secondary);
   }
 
   .progress-step-pending {
-    color: var(--clr-surface-tonal-a40);
+    color: var(--muted-foreground);
   }
 
   .text-primary {
-    color: var(--clr-primary-a0);
+    color: var(--primary);
   }
 
   .text-secondary {
-    color: var(--clr-primary-a40);
+    color: var(--secondary);
   }
 
   .text-accent {
-    color: var(--clr-surface-tonal-a10);
+    color: var(--accent);
   }
 
   .text-foreground {
-    color: var(--clr-light-a0);
+    color: var(--foreground);
   }
 
   .text-muted {
-    color: var(--clr-surface-tonal-a40);
+    color: var(--muted-foreground);
   }
 
   .text-exit {
-    color: #8b0000;
+    color: var(--exit);
   }
 
   .bg-primary {
-    background-color: var(--clr-primary-a0);
+    background-color: var(--primary);
   }
 
   .bg-secondary {
-    background-color: var(--clr-primary-a40);
+    background-color: var(--secondary);
   }
 
   .bg-accent {
-    background-color: var(--clr-surface-tonal-a10);
+    background-color: var(--accent);
   }
 
   .bg-muted {
-    background-color: var(--clr-surface-a20);
+    background-color: var(--muted);
   }
 
   .border {
-    border: 1px solid var(--clr-surface-a30);
+    border: var(--border);
   }
 }

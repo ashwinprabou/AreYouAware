@@ -5,3 +5,6 @@ pydub
 python-dotenv
 google-generativeai
 torch
+fastapi
+uvicorn
+pydantic

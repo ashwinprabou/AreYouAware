@@ -22,6 +22,7 @@ function App() {
   const [userLocation, setUserLocation] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [initialQuery, setInitialQuery] = useState<string>("");
   const [caseDetails, setCaseDetails] = useState({
     notes: [],
     documents: [],
@@ -38,8 +39,9 @@ function App() {
 
   const stepOrder = Object.keys(steps);
 
-  const handleTopicSelect = (topic: string) => {
+  const handleTopicSelect = (topic: string, query?: string) => {
     setSelectedTopic(topic);
+    setInitialQuery(query || "");
     setCurrentStep("chat");
   };
 
@@ -171,7 +173,6 @@ function App() {
             >
               <TopicSelector
                 onSelect={handleTopicSelect}
-                onVoiceRecord={handleVoiceRecord}
                 chatHistory={chatHistory}
                 setChatHistory={setChatHistory}
               />
@@ -187,6 +188,7 @@ function App() {
             >
               <ChatInterface
                 topic={selectedTopic}
+                initialQuery={initialQuery}
                 onComplete={() => setCurrentStep("resources")}
                 chatHistory={chatHistory}
                 setChatHistory={setChatHistory}

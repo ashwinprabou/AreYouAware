@@ -17,11 +17,12 @@ interface ChatMessage {
 }
 
 interface TopicSelectorProps {
-  onSelect: (topic: string) => void;
-  onVoiceRecord: (blob: Blob) => void;
+  onSelect: (topic: string, initialQuery?: string) => void;
   chatHistory: ChatMessage[];
   setChatHistory: (history: ChatMessage[]) => void;
 }
+
+const API_BASE_URL = "http://localhost:8000";
 
 const topics = [
   {
@@ -54,15 +55,13 @@ const topics = [
 
 function TopicSelector({
   onSelect,
-  onVoiceRecord,
   chatHistory,
   setChatHistory,
 }: TopicSelectorProps) {
   const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-    null
-  );
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const startRecording = async () => {
     try {
@@ -71,9 +70,9 @@ function TopicSelector({
       const chunks: BlobPart[] = [];
 
       recorder.ondataavailable = (e) => chunks.push(e.data);
-      recorder.onstop = () => {
+      recorder.onstop = async () => {
         const blob = new Blob(chunks, { type: "audio/webm" });
-        onVoiceRecord(blob);
+        await handleVoiceRecord(blob);
         stream.getTracks().forEach((track) => track.stop());
       };
 
@@ -92,7 +91,49 @@ function TopicSelector({
     }
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleVoiceRecord = async (blob: Blob) => {
+    try {
+      setIsLoading(true);
+      
+      // Send audio blob to backend for transcription
+      const formData = new FormData();
+      formData.append("audio_data", blob);
+
+      const response = await fetch(`${API_BASE_URL}/api/transcribe`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to transcribe audio");
+      }
+
+      const data = await response.json();
+      
+      // Add the transcribed message to chat history
+      const newMessage: ChatMessage = {
+        type: "user",
+        content: data.transcription,
+        timestamp: new Date().toISOString(),
+        isVoice: true,
+      };
+      
+      setChatHistory((currentHistory) => [...currentHistory, newMessage]);
+      onSelect("custom-query", data.transcription);
+    } catch (error) {
+      console.error("Error:", error);
+      const errorMessage: ChatMessage = {
+        type: "ai",
+        content: "Sorry, there was an error transcribing your voice message. Please try again.",
+        timestamp: new Date().toISOString(),
+      };
+      setChatHistory((currentHistory) => [...currentHistory, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       const newMessage: ChatMessage = {
@@ -101,7 +142,7 @@ function TopicSelector({
         timestamp: new Date().toISOString(),
       };
       setChatHistory([...chatHistory, newMessage]);
-      onSelect("custom-query");
+      onSelect("custom-query", searchQuery);
     }
   };
 
@@ -120,10 +161,11 @@ function TopicSelector({
           onClick={isRecording ? stopRecording : startRecording}
           className={`p-6 rounded-full ${
             isRecording
-              ? "bg-destructive/10 text-exit animate-pulse "
+              ? "bg-destructive/10 text-exit animate-pulse"
               : "bg-primary/10 text-primary"
           }`}
           aria-label={isRecording ? "Stop recording" : "Start recording"}
+          disabled={isLoading}
         >
           <div className="w-16 h-16 rounded-full flex items-center justify-center border-2 border-current">
             {isRecording ? (
@@ -146,8 +188,9 @@ function TopicSelector({
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Type your legal question..."
           className="input-field w-[200px]"
+          disabled={isLoading}
         />
-        <button type="submit" className="btn-primary w-[80px]">
+        <button type="submit" className="btn-primary w-[80px]" disabled={isLoading}>
           Ask
         </button>
       </form>
@@ -162,6 +205,7 @@ function TopicSelector({
               key={topic.id}
               onClick={() => onSelect(topic.id)}
               className="w-full flex items-center p-4 card hover:shadow-md transition-shadow"
+              disabled={isLoading}
             >
               <div className="flex-shrink-0">
                 <IconComponent className="h-6 w-6 text-primary" />

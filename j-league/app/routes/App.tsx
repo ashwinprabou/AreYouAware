@@ -105,7 +105,7 @@ function App() {
               )}
               <BookOpen className="h-6 w-6 text-primary" />
               <span className="ml-2 text-lg font-semibold text-foreground ">
-                KnowYourRights
+                RightsNow
               </span>
             </div>
           </div>

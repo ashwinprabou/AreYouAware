@@ -214,7 +214,9 @@ function ChatInterface({
     <div className="chat-inter">
       <div className="chat-header p-3 ">
         <div className="header">
-          <h2 className="text-lg font-semibold">AI Legal Assistant</h2>
+          <h2 className="text-lg font-semibold">
+            Madz - Your AI Legal Assistant
+          </h2>
           <p className="text-sm text-muted text-white">
             Discussing: {topic.replace("-", " ").toUpperCase()}
           </p>
@@ -249,7 +251,7 @@ function ChatInterface({
                   <div className="flex items-center mb-1 ai-text">
                     <Bot className="h-4 w-4 mr-1 text-primary " />
                     <span className="text-sm text-primary font-semibold">
-                      AI Assistant
+                      Madz
                     </span>
                   </div>
                 )}

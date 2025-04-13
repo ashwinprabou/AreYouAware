@@ -272,35 +272,7 @@ function ChatInterface({
                 <p className="text-sm">Thinking...</p>
               </div>
 
-<!--               )}
-              {/* Render AI response with Markdown */}
-              {msg.type === "ai" ? (
-                <ReactMarkdown
-                  components={{
-                    p: ({ node, ...props }) => (
-                      <p className="text-sm" {...props} />
-                    ),
-                  }}
-                >
-                  {msg.content}
-                </ReactMarkdown>
-              ) : (
-                <p className="text-sm">{msg.content}</p>
-              )}
-              <span className="text-xs opacity-75 mt-1 block">
-                {new Date(msg.timestamp).toLocaleTimeString()}
-              </span>
-            </div>
-          </div>
-        ))}
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="max-w-[80%] rounded-lg p-3 bg-gray-200">
-              <div className="flex items-center mb-1">
-                <Bot className="h-4 w-4 mr-1 text-primary" />
-                <span className="text-sm text-primary">AI Assistant</span>
-              </div>
-              <p className="text-sm text-primary">Thinking...</p> -->
+              
 
             </div>
           )}

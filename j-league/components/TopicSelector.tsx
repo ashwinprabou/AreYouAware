@@ -60,6 +60,7 @@
 //   setChatHistory,
 // }: TopicSelectorProps) {
 //   const [isRecording, setIsRecording] = useState(false);
+//   const [isLoading, setIsLoading] = useState(false);
 //   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
 //     null
 //   );
@@ -196,10 +197,7 @@
 //             className="items-center gap-2 form"
 //           >
 
-            
-
 //             <div className="inner-form">
-
 
 //               <div className="flex justify-center">
 //                 <button
@@ -220,56 +218,63 @@
 //                   </div>
 //                 </button>
 //               </div>
-            
+//             </div>
 
-//       {/* Mobile Search Bar */}
-//       <form
-//         onSubmit={handleSearch}
-//         className="relative flex items-center gap-2"
-//       >
-//         <input
-//           type="text"
-//           value={searchQuery}
-//           onChange={(e) => setSearchQuery(e.target.value)}
-//           placeholder="Type your legal question..."
-//           className="input-field w-[200px]"
-//           disabled={isLoading}
-//         />
-//         <button
-//           type="submit"
-//           className="btn-primary w-[80px]"
-//           disabled={isLoading}
+//           </form>
+//         </div>
+
+
+//         {/* Mobile Search Bar */}
+//         <form
+//           onSubmit={handleSearch}
+//           className="relative flex items-center gap-2"
 //         >
-//           Ask
-//         </button>
-//       </form>
+//           <input
+//             type="text"
+//             value={searchQuery}
+//             onChange={(e) => setSearchQuery(e.target.value)}
+//             placeholder="Type your legal question..."
+//             className="input-field w-[200px]"
+//             disabled={isLoading}
+//           />
+//           <button
+//             type="submit"
+//             className="btn-primary w-[80px]"
+//             disabled={isLoading}
+//           >
+//             Ask
+//           </button>
+//         </form>
 
-//       {/* Mobile Topics List */}
-//       <div className="space-y-3 pt-55">
-//         <h2 className="text-lg font-semibold text-foreground">Common Topics</h2>
-//         {topics.map((topic) => {
-//           const IconComponent = topic.icon;
-//           return (
-//             <button
-//               key={topic.id}
-//               // Use the new handleTopicQuery function to query the backend with the topic id and description.
-//               onClick={() => handleTopicQuery(topic)}
-//               className="w-full flex items-center p-4 card hover:shadow-md transition-shadow"
-//               disabled={isLoading}
-//             >
-//               <div className="flex-shrink-0">
-//                 <IconComponent className="h-6 w-6 text-primary" />
-//               </div>
-//               <div className="ml-4 flex-1 text-left">
-//                 <h3 className="text-base font-semibold text-foreground">
-//                   {topic.title}
-//                 </h3>
-//                 <p className="mt-1 text-sm text-muted">{topic.description}</p>
-//               </div>
-//             </button>
-//           );
-//         })}
+//         {/* Mobile Topics List */}
+//         <div className="space-y-3 pt-55 topics">
+//           <h2 className="text-lg font-semibold text-foreground">Common Topics</h2>
+//           {topics.map((topic) => {
+//             const IconComponent = topic.icon;
+//             return (
+//               <button
+//                 key={topic.id}
+//                 // Use the new handleTopicQuery function to query the backend with the topic id and description.
+//                 onClick={() => handleTopicQuery(topic)}
+//                 className="w-full flex items-center p-4 card hover:shadow-md transition-shadow"
+//                 disabled={isLoading}
+//               >
+//                 <div className="flex-shrink-0">
+//                   <IconComponent className="h-6 w-6 text-primary" />
+//                 </div>
+//                 <div className="ml-4 flex-1 text-left">
+//                   <h3 className="text-base font-semibold text-foreground">
+//                     {topic.title}
+//                   </h3>
+//                   <p className="mt-1 text-sm text-muted">{topic.description}</p>
+//                 </div>
+//               </button>
+//             );
+//           })}
+//         </div>
+
 //       </div>
+      
 //     </div>
 //   );
 // }
@@ -277,12 +282,14 @@
 
 // export default TopicSelector;
 
+
 import React, { useState } from "react";
 import {
   Shield,
   Car,
   Home,
   Users,
+  Search,
   Mic,
   StopCircle,
 } from "lucide-react";
@@ -296,7 +303,7 @@ interface ChatMessage {
 }
 
 interface TopicSelectorProps {
-  onSelect: (topic: string, message?: string) => void;
+  onSelect: (topic: string) => void;
   onVoiceRecord: (blob: Blob) => void;
   chatHistory: ChatMessage[];
   setChatHistory: (history: ChatMessage[]) => void;
@@ -313,13 +320,15 @@ const topics = [
     id: "traffic-stops",
     title: "Traffic Stops",
     icon: Car,
-    description: "Understand your rights during traffic stops and police interactions",
+    description:
+      "Understand your rights during traffic stops and police interactions",
   },
   {
     id: "protest-guidelines",
     title: "Protest Guidelines",
     icon: Users,
-    description: "Know your rights when participating in protests and demonstrations",
+    description:
+      "Know your rights when participating in protests and demonstrations",
   },
   {
     id: "car-accident",
@@ -336,9 +345,10 @@ function TopicSelector({
   setChatHistory,
 }: TopicSelectorProps) {
   const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const startRecording = async () => {
     try {
@@ -368,44 +378,16 @@ function TopicSelector({
     }
   };
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      onSelect("custom-query", searchQuery);
-    }
-  };
-
-  const handleTopicQuery = async (topic: { id: string; description: string }) => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: "",
-          topicId: topic.id,
-          description: topic.description,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to query topic");
-      }
-
-      const data = await response.json();
-
-      const newAiMessage: ChatMessage = {
-        type: "ai",
-        content: data.response,
+      const newMessage: ChatMessage = {
+        type: "user",
+        content: searchQuery,
         timestamp: new Date().toISOString(),
       };
-
-      setChatHistory((prev) => [...prev, newAiMessage]);
-      onSelect(topic.id, data.response);
-    } catch (error) {
-      console.error("Error querying topic:", error);
-    } finally {
-      setIsLoading(false);
+      setChatHistory([...chatHistory, newMessage]);
+      onSelect("custom-query");
     }
   };
 
@@ -420,62 +402,85 @@ function TopicSelector({
 
       <div className="center">
         <div className="input-area">
-          {/* 🎙️ Voice Mic */}
-          <div className="flex justify-center mb-4">
-            <button
-              onClick={isRecording ? stopRecording : startRecording}
-              className={`mic ${isRecording ? "bg-destructive/10 animate-pulse" : "bg-primary/10 text-primary"}`}
-              aria-label={isRecording ? "Stop recording" : "Start recording"}
-            >
-              <div className="w-7 h-7 rounded-full flex items-center justify-center border-2 border-current">
-                {isRecording ? <StopCircle className="h-8 w-8" /> : <Mic className="h-8 w-8" />}
-              </div>
-            </button>
-          </div>
+          <form
+            onSubmit={handleSearch}
+            className="items-center gap-2 form"
+          >
 
-          {/* 🔍 Search */}
-          <form onSubmit={handleSearch} className="relative flex items-center gap-2 mb-6">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Type your legal question..."
-              className="input-field w-[200px]"
-              disabled={isLoading}
-            />
-            <button
-              type="submit"
-              className="btn-primary w-[80px]"
-              disabled={isLoading}
-            >
-              Ask
-            </button>
-          </form>
+            
 
-          {/* 📚 Topics */}
-          <div className="space-y-3 pt-6">
-            <h2 className="text-lg font-semibold text-foreground">Common Topics</h2>
-            {topics.map((topic) => {
-              const IconComponent = topic.icon;
-              return (
+            <div className="inner-form">
+
+
+              <div className="flex justify-center">
                 <button
-                  key={topic.id}
-                  onClick={() => handleTopicQuery(topic)}
-                  className="w-full flex items-center p-4 card hover:shadow-md transition-shadow"
-                  disabled={isLoading}
+                  onClick={isRecording ? stopRecording : startRecording}
+                  className={`mic ${
+                    isRecording
+                      ? "bg-destructive/10 mic animate-pulse "
+                      : "bg-primary/10 text-primary"
+                  }`}
+                  aria-label={isRecording ? "Stop recording" : "Start recording"}
                 >
-                  <div className="flex-shrink-0">
-                    <IconComponent className="h-6 w-6 text-primary" />
-                  </div>
-                  <div className="ml-4 flex-1 text-left">
-                    <h3 className="text-base font-semibold text-foreground">{topic.title}</h3>
-                    <p className="mt-1 text-sm text-muted">{topic.description}</p>
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center border-2 border-current">
+                    {isRecording ? (
+                      <StopCircle className="h-8 w-8" />
+                    ) : (
+                      <Mic className="h-8 w-8" />
+                    )}
                   </div>
                 </button>
-              );
-            })}
-          </div>
+              </div>
+
+              <textarea
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Type your legal question..."
+                className="input"
+              />
+
+            </div>
+
+            <button type="submit" className="btn-primary w-[80px]">
+                Ask
+              </button>
+            
+          </form>
         </div>
+      </div>
+
+      {/* Mobile Topics List */}
+      <div className="space-y-3 pt-55">
+        <h2 className="text-lg font-semibold text-foreground">Common Topics</h2>
+        <div className="topics">
+          {topics.map((topic) => {
+            const IconComponent = topic.icon;
+            return (
+              
+              <button
+                key={topic.id}
+                onClick={() => onSelect(topic.id)}
+                className="flex items-center p-4 card hover:shadow-md cursor-pointer"
+              >
+                <div className="">
+                  <IconComponent className="h-6 w-6 text-primary" />
+
+                </div>
+                <div className="ml-4 flex-1 text-left">
+                  <h3 className="text-base font-semibold text-foreground">
+                    {topic.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-muted">{topic.description}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        ABOUT SECTION (!!)
+        <br />
+        OTHER SHIT IF WE HAVE TIME
+        
       </div>
     </div>
   );

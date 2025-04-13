@@ -1,0 +1,36 @@
+.outter-sum-page {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    gap: 10px;
+}
+
+.sum-page {
+    position: relative;
+    width: 65%;
+    left: 18%;
+}
+
+.export-btns {
+    display: flex;
+    position: relative;
+    gap: 10px;
+    width: 65%;
+    left: 18%;
+    align-items: center;
+    justify-content: center;
+}
+
+.text-col {
+    color: #bbb7af;
+}
+
+.card {
+    padding: 40px;
+}
+
+.width {
+    position: relative;
+    left: 18%;
+    width: 65%;
+}

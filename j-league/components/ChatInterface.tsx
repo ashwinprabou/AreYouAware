@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Send, Mic, Bot } from "lucide-react";
+import '../components-css/ChatInterface.css';
 
 interface ChatMessage {
   type: "user" | "ai";
@@ -160,99 +161,111 @@ function ChatInterface({
   };
 
   return (
-    <div className="h-[calc(100vh-11rem)] flex flex-col bg-background rounded-xl shadow-sm overflow-hidden border">
-      {/* Chat Header */}
-      <div className="bg-primary p-3 text-white">
-        <h2 className="text-lg font-semibold">AI Legal Assistant</h2>
-        <p className="text-sm text-muted text-white">
-          Discussing: {topic.replace("-", " ").toUpperCase()}
-        </p>
+    <div className="chat-inter">
+
+      <div className="chat-header p-3 ">
+        <div className="header">
+          <h2 className="text-lg font-semibold">AI Legal Assistant</h2>
+          <p className="text-sm text-muted text-white">
+            Discussing: {topic.replace("-", " ").toUpperCase()}
+          </p>
+        </div>
       </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="p-2 bg-red-100 text-red-600 text-sm">
-          {error}
-        </div>
-      )}
 
-      {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {chatHistory.map((msg, index) => (
-          <div
-            key={index}
-            className={`flex ${
-              msg.type === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
+
+
+
+    <div className="h-[calc(100vh-12rem)] inner-chat flex flex-col bg-background rounded-xl shadow-sm overflow-hidden border">
+
+        {/* Error Message */}
+        {error && (
+          <div className="p-2 error bg-red-100 text-red-600 text-sm">
+            {error}
+          </div>
+        )}
+        
+        {/* Chat Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {chatHistory.map((msg, index) => (
             <div
-              className={`max-w-[80%] rounded-lg p-3 ${
-                msg.type === "user"
-                  ? "message-bubble-user"
-                  : "message-bubble-ai bg-gray-200"
+              key={index}
+              className={`flex ${
+                msg.type === "user" ? "justify-end" : "justify-start"
               }`}
             >
-              {msg.type === "ai" && (
+              <div
+                className={`max-w-[80%] rounded-lg p-3 ${
+                  msg.type === "user"
+                    ? "message-bubble-user"
+                    : "message-bubble-ai"
+                }`}
+              >
+                {msg.type === "ai" && (
+                  <div className="flex items-center mb-1 ai-text">
+                    <Bot className="h-4 w-4 mr-1" />
+                    <span className="text-sm font-semibold">AI Assistant</span>
+                  </div>
+                )}
+                <p className="text-s ai-text">{msg.content}</p>
+                <span className="text-xs ai-text opacity-75 mt-1 block">
+                  {new Date(msg.timestamp).toLocaleTimeString()}
+                </span>
+              </div>
+            </div>
+          ))}
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="max-w-[80%] rounded-lg p-3 bg-gray-200">
                 <div className="flex items-center mb-1">
                   <Bot className="h-4 w-4 mr-1" />
                   <span className="text-sm font-semibold">AI Assistant</span>
                 </div>
-              )}
-              <p className="text-sm">{msg.content}</p>
-              <span className="text-xs opacity-75 mt-1 block">
-                {new Date(msg.timestamp).toLocaleTimeString()}
-              </span>
-            </div>
-          </div>
-        ))}
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="max-w-[80%] rounded-lg p-3 bg-gray-200">
-              <div className="flex items-center mb-1">
-                <Bot className="h-4 w-4 mr-1" />
-                <span className="text-sm font-semibold">AI Assistant</span>
+                <p className="text-sm">Thinking...</p>
               </div>
-              <p className="text-sm">Thinking...</p>
             </div>
+          )}
+        </div>
+
+        {/* Mobile Input Area */}
+        <div className=" p-3 message-input">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setIsRecording(!isRecording)}
+              className={`p-2 rounded-full chat-mic ${
+                isRecording ? "bg-red-100 text-red-600" : "hover:bg-muted"
+              }`}
+              
+            >
+              <Mic className="h-5 w-5" />
+            </button>
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Type your message..."
+              className="input-field"
+              onKeyPress={(e) => e.key === "Enter" && handleSend()}
+              disabled={isLoading}
+            />
+            <button
+              onClick={() => handleSend()}
+              className="p-2 bg-primary text-black send-btn rounded-full hover:secondary"
+              disabled={isLoading}
+            >
+              <Send className="h-5 w-5" />
+            </button>
           </div>
-        )}
+          <div className="mt-3">
+            <button onClick={onComplete} className="btn-secondary continue-btn">
+              Continue to Local Resources
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Mobile Input Area */}
-      <div className="border-t border-border p-3 bg-background">
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setIsRecording(!isRecording)}
-            className={`p-2 rounded-full bg-primary ${
-              isRecording ? "bg-red-100 text-red-600" : "hover:bg-muted"
-            }`}
-          >
-            <Mic className="h-5 w-5" />
-          </button>
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type your message..."
-            className="input-field"
-            onKeyPress={(e) => e.key === "Enter" && handleSend()}
-            disabled={isLoading}
-          />
-          <button
-            onClick={() => handleSend()}
-            className="p-2 bg-primary text-white rounded-full hover:secondary"
-            disabled={isLoading}
-          >
-            <Send className="h-5 w-5" />
-          </button>
-        </div>
-        <div className="mt-3">
-          <button onClick={onComplete} className="btn-secondary">
-            Continue to Local Resources
-          </button>
-        </div>
-      </div>
-    </div>
+  </div>
+    
   );
 }
 

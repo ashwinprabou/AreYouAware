@@ -8,6 +8,7 @@ import {
   Mic,
   StopCircle,
 } from "lucide-react";
+import '../components-css/TopicSelector.css';
 
 interface ChatMessage {
   type: "user" | "ai";
@@ -17,12 +18,11 @@ interface ChatMessage {
 }
 
 interface TopicSelectorProps {
-  onSelect: (topic: string, initialQuery?: string) => void;
+  onSelect: (topic: string) => void;
+  onVoiceRecord: (blob: Blob) => void;
   chatHistory: ChatMessage[];
   setChatHistory: (history: ChatMessage[]) => void;
 }
-
-const API_BASE_URL = "http://localhost:8000";
 
 const topics = [
   {
@@ -55,13 +55,15 @@ const topics = [
 
 function TopicSelector({
   onSelect,
+  onVoiceRecord,
   chatHistory,
   setChatHistory,
 }: TopicSelectorProps) {
   const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const startRecording = async () => {
     try {
@@ -70,9 +72,9 @@ function TopicSelector({
       const chunks: BlobPart[] = [];
 
       recorder.ondataavailable = (e) => chunks.push(e.data);
-      recorder.onstop = async () => {
+      recorder.onstop = () => {
         const blob = new Blob(chunks, { type: "audio/webm" });
-        await handleVoiceRecord(blob);
+        onVoiceRecord(blob);
         stream.getTracks().forEach((track) => track.stop());
       };
 
@@ -91,49 +93,7 @@ function TopicSelector({
     }
   };
 
-  const handleVoiceRecord = async (blob: Blob) => {
-    try {
-      setIsLoading(true);
-      
-      // Send audio blob to backend for transcription
-      const formData = new FormData();
-      formData.append("audio_data", blob);
-
-      const response = await fetch(`${API_BASE_URL}/api/transcribe`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to transcribe audio");
-      }
-
-      const data = await response.json();
-      
-      // Add the transcribed message to chat history
-      const newMessage: ChatMessage = {
-        type: "user",
-        content: data.transcription,
-        timestamp: new Date().toISOString(),
-        isVoice: true,
-      };
-      
-      setChatHistory((currentHistory) => [...currentHistory, newMessage]);
-      onSelect("custom-query", data.transcription);
-    } catch (error) {
-      console.error("Error:", error);
-      const errorMessage: ChatMessage = {
-        type: "ai",
-        content: "Sorry, there was an error transcribing your voice message. Please try again.",
-        timestamp: new Date().toISOString(),
-      };
-      setChatHistory((currentHistory) => [...currentHistory, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       const newMessage: ChatMessage = {
@@ -142,12 +102,12 @@ function TopicSelector({
         timestamp: new Date().toISOString(),
       };
       setChatHistory([...chatHistory, newMessage]);
-      onSelect("custom-query", searchQuery);
+      onSelect("custom-query");
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-60">
       <div className="text-center">
         <h1 className="text-2xl font-bold text-foreground">
           What would you like to inquire about?
@@ -155,70 +115,87 @@ function TopicSelector({
         <p className="mt-2 text-muted">Speak, type, or choose a topic</p>
       </div>
 
-      {/* Voice Recording Button */}
-      <div className="flex justify-center">
-        <button
-          onClick={isRecording ? stopRecording : startRecording}
-          className={`p-6 rounded-full ${
-            isRecording
-              ? "bg-destructive/10 text-exit animate-pulse"
-              : "bg-primary/10 text-primary"
-          }`}
-          aria-label={isRecording ? "Stop recording" : "Start recording"}
-          disabled={isLoading}
-        >
-          <div className="w-16 h-16 rounded-full flex items-center justify-center border-2 border-current">
-            {isRecording ? (
-              <StopCircle className="h-8 w-8" />
-            ) : (
-              <Mic className="h-8 w-8" />
-            )}
-          </div>
-        </button>
+      <div className="center">
+        <div className="input-area">
+          <form
+            onSubmit={handleSearch}
+            className="items-center gap-2 form"
+          >
+
+            
+
+            <div className="inner-form">
+
+
+              <div className="flex justify-center">
+                <button
+                  onClick={isRecording ? stopRecording : startRecording}
+                  className={`mic ${
+                    isRecording
+                      ? "bg-destructive/10 mic animate-pulse "
+                      : "bg-primary/10 text-primary"
+                  }`}
+                  aria-label={isRecording ? "Stop recording" : "Start recording"}
+                >
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center border-2 border-current">
+                    {isRecording ? (
+                      <StopCircle className="h-8 w-8" />
+                    ) : (
+                      <Mic className="h-8 w-8" />
+                    )}
+                  </div>
+                </button>
+              </div>
+
+              <textarea
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Type your legal question..."
+                className="input"
+              />
+
+            </div>
+
+            <button type="submit" className="btn-primary w-[80px]">
+                Ask
+              </button>
+            
+          </form>
+        </div>
       </div>
 
-      {/* Mobile Search Bar */}
-      <form
-        onSubmit={handleSearch}
-        className="relative flex items-center gap-2"
-      >
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Type your legal question..."
-          className="input-field w-[200px]"
-          disabled={isLoading}
-        />
-        <button type="submit" className="btn-primary w-[80px]" disabled={isLoading}>
-          Ask
-        </button>
-      </form>
-
       {/* Mobile Topics List */}
-      <div className="space-y-3">
+      <div className="space-y-3 pt-55">
         <h2 className="text-lg font-semibold text-foreground">Common Topics</h2>
-        {topics.map((topic) => {
-          const IconComponent = topic.icon;
-          return (
-            <button
-              key={topic.id}
-              onClick={() => onSelect(topic.id)}
-              className="w-full flex items-center p-4 card hover:shadow-md transition-shadow"
-              disabled={isLoading}
-            >
-              <div className="flex-shrink-0">
-                <IconComponent className="h-6 w-6 text-primary" />
-              </div>
-              <div className="ml-4 flex-1 text-left">
-                <h3 className="text-base font-semibold text-foreground">
-                  {topic.title}
-                </h3>
-                <p className="mt-1 text-sm text-muted">{topic.description}</p>
-              </div>
-            </button>
-          );
-        })}
+        <div className="topics">
+          {topics.map((topic) => {
+            const IconComponent = topic.icon;
+            return (
+              
+              <button
+                key={topic.id}
+                onClick={() => onSelect(topic.id)}
+                className="flex items-center p-4 card hover:shadow-md cursor-pointer"
+              >
+                <div className="">
+                  <IconComponent className="h-6 w-6 text-primary" />
+
+                </div>
+                <div className="ml-4 flex-1 text-left">
+                  <h3 className="text-base font-semibold text-foreground">
+                    {topic.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-muted">{topic.description}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        ABOUT SECTION (!!)
+        <br />
+        OTHER SHIT IF WE HAVE TIME
+        
       </div>
     </div>
   );

@@ -285,14 +285,6 @@ function ChatInterface({
         {/* Mobile Input Area */}
         <div className=" p-3 message-input">
           <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setIsRecording(!isRecording)}
-              className={`p-2 rounded-full chat-mic ${
-                isRecording ? "bg-red-100 text-red-600" : "hover:bg-muted"
-              }`}
-            >
-              <Mic className="h-5 w-5" />
-            </button>
             <input
               type="text"
               value={message}

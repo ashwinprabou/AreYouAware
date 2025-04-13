@@ -113,7 +113,7 @@ function TopicSelector({
         <h1 className="text-2xl font-bold text-foreground">
           What would you like to inquire about?
         </h1>
-        <p className="mt-2 text-muted">Speak, type, or choose a topic</p>
+        <p className="mt-2 text-muted">Type a topic to get started</p>
       </div>
 
       <div className="center">
@@ -125,10 +125,10 @@ function TopicSelector({
 
             
 
-            {/* <div className="inner-form">
+            <div className="inner-form">
 
 
-              <div className="flex justify-center">
+              {/* <div className="flex justify-center">
                 <button
                   onClick={isRecording ? stopRecording : startRecording}
                   className={`mic ${
@@ -146,19 +146,19 @@ function TopicSelector({
                     )}
                   </div>
                 </button>
-              </div>
+              </div> */}
 
               <textarea
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Type your legal question..."
+                placeholder="Enter the context.."
                 className="input"
               />
 
-            </div> */}
+            </div>
 
-            <button type="submit" className="btn-primary w-[80px]">
-                Ask
+            <button type="submit" className="btn-primary w-[300px]">
+                Get Started!
               </button>
             
           </form>
@@ -192,11 +192,6 @@ function TopicSelector({
             );
           })}
         </div>
-
-        ABOUT SECTION (!!)
-        <br />
-        OTHER SHIT IF WE HAVE TIME
-        
       </div>
     </div>
   );

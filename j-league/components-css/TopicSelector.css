@@ -3,7 +3,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 150px;
+    height: 100px;
 }
 
 .inner-form {
@@ -15,7 +15,7 @@
     padding: 12px;
     border-radius: 20px;
     width: 900px;
-    height: 100px;
+    height: 50px;
     font-size: 15px;
     resize: none;
     outline: none;

@@ -34,17 +34,14 @@ function ChatInterface({
 
   useEffect(() => {
     if (initialQuery && chatHistory.length === 0 && !hasSentInitial) {
-      // Add the user’s initial message
+      // Add the initial query (topic and description) as the first user message
       const newMessage: ChatMessage = {
         type: "user",
         content: initialQuery,
         timestamp: new Date().toISOString(),
       };
 
-      // Set `hasSentInitial` to true immediately to prevent duplicate calls
       setHasSentInitial(true);
-
-      // Update the chat history
       setChatHistory([newMessage]);
     }
   }, [initialQuery, chatHistory.length, hasSentInitial]);

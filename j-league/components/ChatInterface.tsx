@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { Send, Mic, Bot } from "lucide-react";
-import '../components-css/ChatInterface.css';
+import "../components-css/ChatInterface.css";
 
 interface ChatMessage {
   type: "user" | "ai";
@@ -212,7 +212,6 @@ function ChatInterface({
 
   return (
     <div className="chat-inter">
-
       <div className="chat-header p-3 ">
         <div className="header">
           <h2 className="text-lg font-semibold">AI Legal Assistant</h2>
@@ -222,16 +221,14 @@ function ChatInterface({
         </div>
       </div>
 
-
-    <div className="h-[calc(100vh-12rem)] inner-chat flex flex-col bg-background rounded-xl shadow-sm overflow-hidden border">
-
+      <div className="h-[calc(100vh-12rem)] inner-chat flex flex-col bg-background rounded-xl shadow-sm overflow-hidden border">
         {/* Error Message */}
         {error && (
           <div className="p-2 error bg-red-100 text-red-600 text-sm">
             {error}
           </div>
         )}
-        
+
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {chatHistory.map((msg, index) => (
@@ -244,17 +241,25 @@ function ChatInterface({
               <div
                 className={`max-w-[80%] rounded-lg p-3 ${
                   msg.type === "user"
-                    ? "message-bubble-user"
+                    ? "message-bubble-user text-white"
                     : "message-bubble-ai"
                 }`}
               >
                 {msg.type === "ai" && (
                   <div className="flex items-center mb-1 ai-text">
-                    <Bot className="h-4 w-4 mr-1" />
-                    <span className="text-sm font-semibold">AI Assistant</span>
+                    <Bot className="h-4 w-4 mr-1 text-primary " />
+                    <span className="text-sm text-primary font-semibold">
+                      AI Assistant
+                    </span>
                   </div>
                 )}
-                <p className="text-s ai-text">{msg.content}</p>
+                {msg.type === "ai" ? (
+                  <div className="text-s ai-text">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
+                ) : (
+                  <p className="text-s user-text">{msg.content}</p>
+                )}
                 <span className="text-xs ai-text opacity-75 mt-1 block">
                   {new Date(msg.timestamp).toLocaleTimeString()}
                 </span>
@@ -263,17 +268,16 @@ function ChatInterface({
           ))}
           {isLoading && (
             <div className="flex justify-start">
-              <div className="max-w-[80%] rounded-lg p-3 bg-gray-200">
+              <div className="max-w-[80%] rounded-lg p-3 ">
                 <div className="flex items-center mb-1">
-                  <Bot className="h-4 w-4 mr-1" />
-                  <span className="text-sm text-primary">AI Assistant</span>
+                  <Bot className="h-4 w-4 text-primary mr-1" />
+                  <span className="text-sm text-primary font-semibold">
+                    AI Assistant
+                  </span>
                 </div>
 
                 <p className="text-sm">Thinking...</p>
               </div>
-
-              
-
             </div>
           )}
         </div>
@@ -286,7 +290,6 @@ function ChatInterface({
               className={`p-2 rounded-full chat-mic ${
                 isRecording ? "bg-red-100 text-red-600" : "hover:bg-muted"
               }`}
-              
             >
               <Mic className="h-5 w-5" />
             </button>
@@ -314,9 +317,7 @@ function ChatInterface({
           </div>
         </div>
       </div>
-
-  </div>
-    
+    </div>
   );
 }
 

@@ -96,7 +96,10 @@ function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               {currentStep !== "topics" && (
-                <button onClick={handleBack} className="nav-icon text-white mr-2">
+                <button
+                  onClick={handleBack}
+                  className="nav-icon text-white mr-2"
+                >
                   <ArrowLeft className="h-5 w-5" />
                 </button>
               )}
@@ -105,7 +108,6 @@ function App() {
                 KnowYourRights
               </span>
             </div>
-
           </div>
         </div>
       </nav>
@@ -113,17 +115,17 @@ function App() {
       {/* Confirmation Dialog */}
       {showConfirmation && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="card max-w-sm w-full mx-4">
-            <h3 className="section-title">Confirm Exit</h3>
-            <p className="text-muted mb-4">
+          <div className="card card-hover max-w-sm w-full mx-4">
+            <h3 className="section-title text-primary mb-4">Confirm Exit</h3>
+            <p className="text-white  mb-4">
               Are you sure you want to go back? Your chat history will not be
               saved.
             </p>
             <div className="flex justify-end space-x-3">
-              <button onClick={handleCancelBack} className="btn-neutral">
+              <button onClick={handleCancelBack} className="btn-neutral text-white">
                 Cancel
               </button>
-              <button onClick={handleConfirmBack} className="btn-exit">
+              <button onClick={handleConfirmBack} className="btn-exit text-white">
                 Exit
               </button>
             </div>

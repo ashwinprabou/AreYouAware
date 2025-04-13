@@ -38,7 +38,8 @@ function App() {
 
   const stepOrder = Object.keys(steps);
 
-  const handleTopicSelect = (topic: string) => {
+  const handleTopicSelect = (topic: string, query?: string) => {
+    setChatHistory([]);
     setSelectedTopic(topic);
     setCurrentStep("chat");
   };

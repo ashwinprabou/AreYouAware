@@ -65,6 +65,7 @@ function TopicSelector({
   );
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Function to handle voice recording (existing logic)
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -93,16 +94,89 @@ function TopicSelector({
     }
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      const newMessage: ChatMessage = {
-        type: "user",
-        content: searchQuery,
+  const handleVoiceRecord = async (blob: Blob) => {
+    try {
+      setIsLoading(true);
+
+      // Send audio blob to backend for transcription
+      const formData = new FormData();
+      formData.append("audio_data", blob);
+
+      const response = await fetch(`${API_BASE_URL}/api/transcribe`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to transcribe audio");
+      }
+
+      const data = await response.json();
+
+      onSelect("custom-query", data.transcription);
+    } catch (error) {
+      console.error("Error:", error);
+      const errorMessage: ChatMessage = {
+        type: "ai",
+        content:
+          "Sorry, there was an error transcribing your voice message. Please try again.",
         timestamp: new Date().toISOString(),
       };
-      setChatHistory([...chatHistory, newMessage]);
-      onSelect("custom-query");
+      setChatHistory((currentHistory) => [...currentHistory, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Function to handle search bar form submission
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      onSelect("custom-query", searchQuery);
+    }
+  };
+
+  // NEW FUNCTION: handleTopicQuery
+  // This function sends both topic.id and topic.description to the backend.
+  const handleTopicQuery = async (topic: {
+    id: string;
+    description: string;
+  }) => {
+    try {
+      setIsLoading(true);
+      // Create a payload that includes the topic details.
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: "",
+          topicId: topic.id,
+          description: topic.description,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to query topic");
+      }
+
+      const data = await response.json();
+
+      const newAiMessage: ChatMessage = {
+        type: "ai",
+        content: data.response,
+        timestamp: new Date().toISOString(),
+      };
+
+
+      setChatHistory((prev) => [...prev, newAiMessage]);
+
+      // Use the topic id and the answer returned from the API.
+      onSelect(topic.id, data.response);
+    } catch (error) {
+      console.error("Error querying topic:", error);
+      // Handle the error in your UI
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -147,55 +221,53 @@ function TopicSelector({
                 </button>
               </div>
 
-              <textarea
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Type your legal question..."
-                className="input"
-              />
-
-            </div>
-
-            <button type="submit" className="btn-primary w-[80px]">
-                Ask
-              </button>
-            
-          </form>
-        </div>
-      </div>
+      {/* Mobile Search Bar */}
+      <form
+        onSubmit={handleSearch}
+        className="relative flex items-center gap-2"
+      >
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Type your legal question..."
+          className="input-field w-[200px]"
+          disabled={isLoading}
+        />
+        <button
+          type="submit"
+          className="btn-primary w-[80px]"
+          disabled={isLoading}
+        >
+          Ask
+        </button>
+      </form>
 
       {/* Mobile Topics List */}
       <div className="space-y-3 pt-55">
         <h2 className="text-lg font-semibold text-foreground">Common Topics</h2>
-        <div className="topics">
-          {topics.map((topic) => {
-            const IconComponent = topic.icon;
-            return (
-              
-              <button
-                key={topic.id}
-                onClick={() => onSelect(topic.id)}
-                className="flex items-center p-4 card hover:shadow-md cursor-pointer"
-              >
-                <div className="">
-                  <IconComponent className="h-6 w-6 text-primary" />
-
-                </div>
-                <div className="ml-4 flex-1 text-left">
-                  <h3 className="text-base font-semibold text-foreground">
-                    {topic.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-muted">{topic.description}</p>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        ABOUT SECTION (!!)
-        <br />
-        OTHER SHIT IF WE HAVE TIME
-        
+        {topics.map((topic) => {
+          const IconComponent = topic.icon;
+          return (
+            <button
+              key={topic.id}
+              // Use the new handleTopicQuery function to query the backend with the topic id and description.
+              onClick={() => handleTopicQuery(topic)}
+              className="w-full flex items-center p-4 card hover:shadow-md transition-shadow"
+              disabled={isLoading}
+            >
+              <div className="flex-shrink-0">
+                <IconComponent className="h-6 w-6 text-primary" />
+              </div>
+              <div className="ml-4 flex-1 text-left">
+                <h3 className="text-base font-semibold text-foreground">
+                  {topic.title}
+                </h3>
+                <p className="mt-1 text-sm text-muted">{topic.description}</p>
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

@@ -274,7 +274,7 @@ function ChatInterface({
                 <div className="flex items-center mb-1">
                   <Bot className="h-4 w-4 text-primary mr-1" />
                   <span className="text-sm text-primary font-semibold">
-                    AI Assistant
+                    Madz
                   </span>
                 </div>
 
